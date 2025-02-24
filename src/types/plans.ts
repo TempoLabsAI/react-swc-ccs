@@ -9,8 +9,8 @@ export interface Product {
   id: string;
   name: string;
   description: string;
-  isRecurring: boolean;
-  prices: Price[];
+  // isRecurring: boolean;
+  // prices: Price[];
 }
 
 export interface PlansResponse {
