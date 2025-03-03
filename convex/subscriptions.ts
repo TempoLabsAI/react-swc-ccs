@@ -32,8 +32,6 @@ export const createCheckoutSession = action({
             email: user.email,
         }
 
-        console.log("metadata:", metadata);
-
         const checkout = await stripe.checkout.sessions.create({
             payment_method_types: ["card"],
             line_items: [{ price: args.priceId, quantity: 1, }],
