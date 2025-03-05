@@ -1,4 +1,3 @@
-import { Polar } from "@polar-sh/sdk";
 import { v } from "convex/values";
 import Stripe from "stripe";
 import { api, internal } from "./_generated/api";
