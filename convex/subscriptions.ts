@@ -159,13 +159,11 @@ export const getUserSubscription = query({
 export const getUserDashboardUrl = action({
     handler: async (ctx, args: { customerId: string }) => {
         try {
+            
             const session = await stripe.billingPortal.sessions.create({
                 customer: args.customerId,
                 return_url: process.env.FRONTEND_URL, // URL to redirect to after the customer is done in the portal
             });
-            // Only return the URL to avoid Convex type issues
-
-            console.log("session", session);
 
             return { url: session.url };
 
