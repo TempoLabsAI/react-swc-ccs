@@ -8,8 +8,8 @@ A modern, production-ready React starter template with built-in authentication, 
 - 🔐 **Authentication** - Secure authentication with [Clerk](https://clerk.com)
 - 🗄️ **Backend-as-a-Service** - Powered by [Convex](https://convex.dev)
 - 💳 **Payments** - Subscription payments with [Stripe](https://stripe.com)
-- 🎨 **Styling** - Beautiful UI components with [Radix UI](https://www.radix-ui.com)
-- 📱 **Responsive** - Mobile-first design approach
+- 🎨 **UI/UX** - Beautiful UI components with [Radix UI](https://www.radix-ui.com) and [Framer Motion](https://www.framer.com/motion/)
+- 📱 **Responsive** - Mobile-first design with Tailwind CSS
 - 🔍 **TypeScript** - Type safety and better developer experience
 - 🔄 **Real-time** - Real-time updates with Convex subscriptions
 
@@ -21,9 +21,11 @@ A modern, production-ready React starter template with built-in authentication, 
 - **Backend**: Convex
 - **Payments**: Stripe
 - **UI Components**: Radix UI
+- **Animation**: Framer Motion
 - **Styling**: Tailwind CSS
+- **Forms**: React Hook Form with Zod validation
 - **Routing**: React Router v6
-- **Type Safety**: TypeScript
+- **Analytics**: Vercel Analytics
 
 ## 🛠️ Prerequisites
 
@@ -47,26 +49,22 @@ Before you begin, ensure you have:
    ```
 
 3. **Set up environment variables**
-   Create a `.env` file in the root directory:
+   Create a `.env.local` file in the root directory:
    ```env
    # Clerk Authentication
    VITE_CLERK_PUBLISHABLE_KEY=your_clerk_key
+   VITE_CLERK_SIGN_IN_URL=/sign-in
+   VITE_CLERK_SIGN_UP_URL=/sign-up
+   VITE_CLERK_AFTER_SIGN_IN_URL=/
+   VITE_CLERK_AFTER_SIGN_UP_URL=/
 
    # Convex Backend
+   CONVEX_DEPLOYMENT=dev:your-deployment
    VITE_CONVEX_URL=your_convex_url
 
-   # Application URLs
-   VITE_FRONTEND_URL=your_frontend_url
-
-   # Polar.sh Payments (Server-side in Convex)
-   POLAR_ACCESS_TOKEN=your_polar_access_token
-   ```
-
-   For Convex, create a `convex/.env` file:
-   ```env
-   # Polar.sh Configuration
-   POLAR_ACCESS_TOKEN=your_polar_access_token
-   FRONTEND_URL=your_frontend_url
+   # Stripe Configuration
+   STRIPE_SECRET_KEY=your_stripe_secret_key
+   STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
    ```
 
 4. **Start the development server**
@@ -78,16 +76,20 @@ Before you begin, ensure you have:
 
 ```
 react-swc-starter/
-├── convex/              # Backend functions and schema
-├── public/              # Static assets
+├── .swc/               # SWC configuration
+├── convex/             # Backend functions and schema
+├── public/             # Static assets
 ├── src/
-│   ├── components/      # React components
-│   ├── hooks/          # Custom React hooks
-│   ├── lib/            # Utility functions
-│   ├── types/          # TypeScript types
-│   └── App.tsx         # Main application component
-├── .env                # Environment variables
-└── package.json        # Project dependencies
+│   ├── components/     # React components
+│   ├── hooks/         # Custom React hooks
+│   ├── lib/           # Utility functions
+│   ├── types/         # TypeScript types
+│   └── App.tsx        # Main application component
+├── .env.local         # Environment variables
+├── components.json    # Shadcn/UI components config
+├── tailwind.config.js # Tailwind CSS configuration
+├── vite.config.ts     # Vite configuration
+└── package.json       # Project dependencies
 ```
 
 ## 🔒 Authentication
@@ -97,78 +99,67 @@ Authentication is handled by Clerk, providing:
 - Social login providers
 - User management
 - Session handling
+- Custom sign-in/sign-up URLs
+- Configurable redirect URLs
 
-## 💳 Payments
+## 🗄️ Backend Services
 
-Subscription payments are processed through Polar.sh:
-- Secure payment processing
-- Subscription management
-- Usage-based billing
-- Customer portal
-
-### Configuring Polar.sh
-
-1. **Create a Polar.sh Account**
-   - Sign up at [Polar.sh](https://polar.sh)
-   - Create a new organization
-   - Get your API access token from the settings
-
-2. **Set Up Products**
-   - Create your subscription products in the Polar.sh dashboard
-   - Note down the product IDs for your plans
-   - Configure pricing tiers (monthly/yearly)
-
-3. **Configure Webhooks**
-   - Set up webhooks in your Polar.sh dashboard
-   - Add your Convex backend URL as the webhook endpoint
-   - Ensure the following events are enabled:
-     - subscription.created
-     - subscription.activated
-     - subscription.canceled
-     - subscription.uncanceled
-     - subscription.revoked
-
-4. **Environment Variables**
-   - Add your Polar.sh access token to both `.env` and `convex/.env`
-   - Ensure your frontend URL is correctly set for success/cancel redirects
-
-## 🗄️ Backend
-
-Convex provides:
+### Convex
 - Real-time data synchronization
 - Automatic caching
 - Type-safe database queries
 - Serverless functions
 - WebSocket connections
+- Stripe webhook handling
+- Subscription management
 
-## 🔄 Subscription Flow
+## 💳 Payments
 
-The application implements a complete subscription flow:
+Subscription payments are processed through Stripe:
+- Secure payment processing
+- Subscription management
+- Usage-based billing
+- Customer portal
+- Webhook integration
+- Automatic invoice handling
 
-1. **User Authentication**
-   - Users sign in using Clerk authentication
-   - User data is stored in Convex
+### Stripe Integration Features
+- Checkout sessions for subscription creation
+- Customer billing portal
+- Webhook handling for subscription events
+- Automatic subscription status updates
+- Usage-based billing support
+- Multiple pricing tiers
 
-2. **Subscription Selection**
-   - Users view available plans on the pricing page
-   - Plans are fetched from Polar.sh
-   - Monthly and yearly options are available
+## 🎨 UI Components
 
-3. **Checkout Process**
-   - Clicking a plan redirects to Polar.sh checkout
-   - User completes payment on Polar.sh
-   - Successful payment redirects to success page
-   - Webhook updates subscription status in Convex
+The project uses a combination of powerful UI tools:
 
-4. **Access Control**
-   - Protected routes check subscription status
-   - Non-subscribed users are redirected to pricing
-   - Subscribed users can access premium features
+### Radix UI
+- Accessible components
+- Unstyled and customizable
+- Keyboard navigation
+- Screen reader support
 
-5. **Subscription Management**
-   - Users can manage their subscription via dashboard
-   - Cancel/upgrade/downgrade through Polar.sh portal
-   - Real-time status updates via webhooks
+### Framer Motion
+- Smooth animations
+- Gesture support
+- Layout transitions
+- Advanced motion controls
+
+### Tailwind CSS
+- Utility-first CSS
+- Responsive design
+- Dark mode support
+- Custom animations
+
+## 📊 Analytics
+
+Built-in analytics with Vercel Analytics:
+- Page views
+- User engagement
+- Performance metrics
+- Real-time dashboard
 
 ## 🚀 Deployment
 
@@ -178,10 +169,7 @@ The application implements a complete subscription flow:
    ```
 
 2. **Deploy to your preferred platform**
-   - Vercel
-   - Netlify
-   - GitHub Pages
-   - Any static hosting
+   - Vercel (recommended)
 
 ## 📝 License
 
@@ -201,5 +189,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 - [Clerk](https://clerk.com) for authentication
 - [Convex](https://convex.dev) for backend services
-- [Polar.sh](https://polar.sh) for payment processing
+- [Stripe](https://stripe.com) for payment processing
 - [Radix UI](https://www.radix-ui.com) for UI components
+- [Framer Motion](https://www.framer.com/motion/) for animations
+- [Vercel](https://vercel.com) for analytics and deployment
